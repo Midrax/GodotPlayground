@@ -1,0 +1,118 @@
+[gd_scene load_steps=16 format=3 uid="uid://3j1hghfg2ykk"]
+
+[ext_resource type="Script" uid="uid://by2nkh1ndx14l" path="res://Demo.cs" id="1_e228u"]
+[ext_resource type="Texture2D" uid="uid://dddvder20syq" path="res://icon.svg" id="2_spdx3"]
+[ext_resource type="Shader" uid="uid://bri7jlk5stu1f" path="res://split_screen.gdshader" id="2_utl8k"]
+[ext_resource type="Script" uid="uid://3exjlo3djnvf" path="res://scenes/CameraController.cs" id="2_xwrrd"]
+[ext_resource type="Script" uid="uid://vskvq3j0g4nk" path="res://scenes/PlayerController.cs" id="3_puwen"]
+
+[sub_resource type="Environment" id="Environment_e228u"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xwrrd"]
+shader = ExtResource("2_utl8k")
+shader_parameter/viewport_size = Vector2(0, 0)
+shader_parameter/split_active = false
+shader_parameter/player1_position = Vector2(0, 0)
+shader_parameter/player2_position = Vector2(0, 0)
+shader_parameter/split_line_thickness = 10.0
+shader_parameter/split_line_color = Color(0, 0, 0, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_spdx3"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_utl8k"]
+albedo_color = Color(0.8918366, 0, 0.1982032, 1)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_puwen"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_puwen"]
+albedo_color = Color(0, 0.48092556, 0.8825173, 1)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_utl8k"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_spdx3"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_spdx3"]
+material = SubResource("StandardMaterial3D_spdx3")
+size = Vector2(10, 10)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_spdx3"]
+
+[node name="Demo" type="Node3D"]
+script = ExtResource("1_e228u")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+light_energy = 0.5
+shadow_enabled = true
+shadow_bias = 0.03
+shadow_blur = 2.0
+directional_shadow_mode = 0
+directional_shadow_fade_start = 1.0
+directional_shadow_max_distance = 12.0
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_e228u")
+
+[node name="Cameras" type="Node3D" parent="."]
+script = ExtResource("2_xwrrd")
+MaxSeparation = 10.0
+
+[node name="View" type="TextureRect" parent="Cameras"]
+material = SubResource("ShaderMaterial_xwrrd")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_spdx3")
+
+[node name="Viewport1" type="SubViewport" parent="Cameras"]
+msaa_3d = 2
+size = Vector2i(1920, 1080)
+render_target_update_mode = 3
+
+[node name="Camera1" type="Camera3D" parent="Cameras/Viewport1"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 10, 0)
+current = true
+
+[node name="Viewport2" type="SubViewport" parent="Cameras"]
+msaa_3d = 2
+size = Vector2i(1920, 1080)
+size_2d_override_stretch = true
+
+[node name="Camera2" type="Camera3D" parent="Cameras/Viewport2"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 10, 0)
+current = true
+
+[node name="Player1" type="CharacterBody3D" parent="."]
+script = ExtResource("3_puwen")
+
+[node name="Mesh" type="MeshInstance3D" parent="Player1"]
+mesh = SubResource("CapsuleMesh_spdx3")
+surface_material_override/0 = SubResource("StandardMaterial3D_utl8k")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player1"]
+shape = SubResource("CapsuleShape3D_puwen")
+
+[node name="Player2" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8203855, 0, 0)
+script = ExtResource("3_puwen")
+PlayerId = 2
+
+[node name="Mesh" type="MeshInstance3D" parent="Player2"]
+mesh = SubResource("CapsuleMesh_spdx3")
+surface_material_override/0 = SubResource("StandardMaterial3D_puwen")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player2"]
+shape = SubResource("CapsuleShape3D_utl8k")
+
+[node name="Ground" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.0226704, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(2, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0)
+mesh = SubResource("PlaneMesh_spdx3")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
+transform = Transform3D(20, 0, 0, 0, 1, 0, 0, 0, 20, 0, -0.5, 0)
+shape = SubResource("BoxShape3D_spdx3")
