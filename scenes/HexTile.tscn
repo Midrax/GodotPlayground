@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://k22rf5rg513l"]
+
+[ext_resource type="Script" uid="uid://d0leagp4qxusw" path="res://scripts/planet/HexTile.cs" id="1_k1oo0"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_k1oo0"]
+height = 0.05
+radial_segments = 6
+
+[node name="HexTile" type="Node3D"]
+script = ExtResource("1_k1oo0")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("CylinderMesh_k1oo0")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]

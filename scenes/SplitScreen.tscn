@@ -1,15 +1,15 @@
 [gd_scene load_steps=16 format=3 uid="uid://3j1hghfg2ykk"]
 
-[ext_resource type="Script" uid="uid://by2nkh1ndx14l" path="res://Demo.cs" id="1_e228u"]
-[ext_resource type="Texture2D" uid="uid://dddvder20syq" path="res://icon.svg" id="2_spdx3"]
-[ext_resource type="Shader" uid="uid://bri7jlk5stu1f" path="res://split_screen.gdshader" id="2_utl8k"]
-[ext_resource type="Script" uid="uid://3exjlo3djnvf" path="res://scenes/CameraController.cs" id="2_xwrrd"]
-[ext_resource type="Script" uid="uid://vskvq3j0g4nk" path="res://scenes/PlayerController.cs" id="3_puwen"]
+[ext_resource type="Script" uid="uid://b1h1plhaoif5o" path="res://scripts/splitscreen/SplitScreen.cs" id="1_0t4f2"]
+[ext_resource type="Script" uid="uid://3exjlo3djnvf" path="res://scripts/splitscreen/CameraController.cs" id="1_6yklf"]
+[ext_resource type="Shader" uid="uid://bri7jlk5stu1f" path="res://split_screen.gdshader" id="2_0t4f2"]
+[ext_resource type="Texture2D" uid="uid://dddvder20syq" path="res://icon.svg" id="3_co13r"]
+[ext_resource type="Script" uid="uid://vskvq3j0g4nk" path="res://scripts/splitscreen/PlayerController.cs" id="4_l6p7v"]
 
 [sub_resource type="Environment" id="Environment_e228u"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_xwrrd"]
-shader = ExtResource("2_utl8k")
+shader = ExtResource("2_0t4f2")
 shader_parameter/viewport_size = Vector2(0, 0)
 shader_parameter/split_active = false
 shader_parameter/player1_position = Vector2(0, 0)
@@ -37,8 +37,8 @@ size = Vector2(10, 10)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_spdx3"]
 
-[node name="Demo" type="Node3D"]
-script = ExtResource("1_e228u")
+[node name="SplitScreen" type="Node3D"]
+script = ExtResource("1_0t4f2")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
@@ -54,7 +54,7 @@ directional_shadow_max_distance = 12.0
 environment = SubResource("Environment_e228u")
 
 [node name="Cameras" type="Node3D" parent="."]
-script = ExtResource("2_xwrrd")
+script = ExtResource("1_6yklf")
 MaxSeparation = 10.0
 
 [node name="View" type="TextureRect" parent="Cameras"]
@@ -64,7 +64,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_spdx3")
+texture = ExtResource("3_co13r")
 
 [node name="Viewport1" type="SubViewport" parent="Cameras"]
 msaa_3d = 2
@@ -85,7 +85,7 @@ transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 1
 current = true
 
 [node name="Player1" type="CharacterBody3D" parent="."]
-script = ExtResource("3_puwen")
+script = ExtResource("4_l6p7v")
 
 [node name="Mesh" type="MeshInstance3D" parent="Player1"]
 mesh = SubResource("CapsuleMesh_spdx3")
@@ -96,7 +96,7 @@ shape = SubResource("CapsuleShape3D_puwen")
 
 [node name="Player2" type="CharacterBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8203855, 0, 0)
-script = ExtResource("3_puwen")
+script = ExtResource("4_l6p7v")
 PlayerId = 2
 
 [node name="Mesh" type="MeshInstance3D" parent="Player2"]

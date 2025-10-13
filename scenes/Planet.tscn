@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://cmhj00lq2rvbh"]
+
+[ext_resource type="Script" uid="uid://b8mii35ko6paj" path="res://scripts/planet/Planet.cs" id="1_xv80x"]
+[ext_resource type="PackedScene" uid="uid://k22rf5rg513l" path="res://scenes/HexTile.tscn" id="2_wsaxd"]
+
+[node name="Planet" type="Node3D" node_paths=PackedStringArray("PlanetCamera")]
+script = ExtResource("1_xv80x")
+Subdivisions = 4
+HexTileScene = ExtResource("2_wsaxd")
+PlanetCamera = NodePath("Camera3D")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+
+[node name="Camera3D" type="Camera3D" parent="."]
+
+[node name="HexTiles" type="Node3D" parent="."]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 250.50935, 0)
+light_specular = 0.0

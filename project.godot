@@ -23,6 +23,10 @@ window/stretch/mode="viewport"
 
 project/assembly_name="Playground"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/mixamo_animation_retargeter/plugin.cfg")
+
 [input]
 
 move_up_player1={
