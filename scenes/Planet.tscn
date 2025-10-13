@@ -5,7 +5,7 @@
 
 [node name="Planet" type="Node3D" node_paths=PackedStringArray("PlanetCamera")]
 script = ExtResource("1_xv80x")
-Subdivisions = 4
+Subdivisions = 6
 HexTileScene = ExtResource("2_wsaxd")
 PlanetCamera = NodePath("Camera3D")
 

@@ -19,7 +19,7 @@ public partial class HexTile : Node3D
 		meshInstance.SetSurfaceOverrideMaterial(0, material);
 
 		// Optional: add a small offset for better visibility when clicked
-		meshInstance.CastShadow = GeometryInstance3D.ShadowCastingSetting.On;
+		//meshInstance.CastShadow = GeometryInstance3D.ShadowCastingSetting.On;
 	}
 
 	public void ToggleSelection()

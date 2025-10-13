@@ -3,11 +3,12 @@ using System;
 using System.Collections.Generic;
 
 /// <summary>
-/// Generates a 3D planet surface made of tiles (centers of an IcoSphere subdivision).
-/// The resulting pattern is a mix of hexagons and 12 pentagons (the vertices of the original icosahedron).
-/// This version integrates 3D Perlin noise for height variation and biome coloring.
+/// Generates a seamless 3D planet surface made of hex/pent tiles (icosphere subdivision).
+/// Uses FastNoiseLite for biome coloring (not elevation).
+/// Tiles share a perfectly smooth surface — no visible seams or cracks.
+/// Meshes are outward-facing and the planet interior is culled.
 /// </summary>
-public partial class Planet : Node3D // <-- Class name now correctly matches the file name 'Planet.cs'
+public partial class Planet : Node3D
 {
 	[Export] public int Subdivisions = 2;
 	[Export] public float Radius = 6f;
@@ -15,10 +16,11 @@ public partial class Planet : Node3D // <-- Class name now correctly matches the
 	[Export] public Camera3D PlanetCamera;
 
 	private Node3D hexContainer;
+	private FastNoiseLite noise;
 
 	public override void _Ready()
 	{
-		// FIX: Use SafeGetNode to prevent errors if the scene structure is slightly off
+		// Create hex tile container if missing
 		if (GetChildCount() == 0 || GetNodeOrNull<Node3D>("HexTiles") == null)
 		{
 			hexContainer = new Node3D();
@@ -30,22 +32,34 @@ public partial class Planet : Node3D // <-- Class name now correctly matches the
 			hexContainer = GetNode<Node3D>("HexTiles");
 		}
 
+		// Assign camera if missing
 		if (PlanetCamera == null)
 		{
 			PlanetCamera = GetNodeOrNull<Camera3D>("Camera3D");
 			if (PlanetCamera == null)
-			{
 				GD.PushError("Camera3D not found! Raycasting for clicks will fail.");
-			}
 		}
-		
+
+		SetupNoise();
 		GenerateHexSphere();
+	}
+
+	private void SetupNoise()
+	{
+		noise = new FastNoiseLite();
+		noise.SetSeed((int)GD.RandRange(0, 10000));
+		noise.SetNoiseType(FastNoiseLite.NoiseTypeEnum.Perlin);
+		noise.SetFractalType(FastNoiseLite.FractalTypeEnum.Fbm);
+		noise.SetFractalOctaves(4);
+		noise.SetFractalLacunarity(2f);
+		noise.SetFractalGain(0.5f);
+		noise.SetFrequency(0.05f);
 	}
 
 	public override void _Input(InputEvent @event)
 	{
 		if (PlanetCamera == null) return;
-		
+
 		if (@event is InputEventMouseButton mb && mb.Pressed && mb.ButtonIndex == MouseButton.Left)
 			HandleMouseClick(mb.Position);
 	}
@@ -75,19 +89,13 @@ public partial class Planet : Node3D // <-- Class name now correctly matches the
 
 	private void GenerateHexSphere()
 	{
-		// NOTE: Assuming IcosphereGenerator and HexTile are defined elsewhere and accessible.
-		// If these are internal classes, you must ensure they are properly loaded/referenced.
-		// Also assuming HexTileScene is a PackedScene that contains a Node3D root, MeshInstance3D, and CollisionShape3D.
-		
-		// Clean up existing tiles
+		// Clear previous tiles
 		foreach (Node child in hexContainer.GetChildren())
-		{
 			child.QueueFree();
-		}
 
 		var (verts, faces) = IcosphereGenerator.Generate(Subdivisions);
 
-		// Compute triangle centers
+		// Compute face centers
 		var faceCenters = new List<Vector3>(faces.Count);
 		for (int i = 0; i < faces.Count; i++)
 		{
@@ -97,7 +105,7 @@ public partial class Planet : Node3D // <-- Class name now correctly matches the
 			faceCenters.Add(center);
 		}
 
-		// Map: vertex -> faces that use it
+		// Map vertex -> adjacent faces
 		var vertexToFaces = new Dictionary<int, List<int>>();
 		for (int fi = 0; fi < faces.Count; fi++)
 		{
@@ -114,17 +122,13 @@ public partial class Planet : Node3D // <-- Class name now correctly matches the
 		{
 			int vIndex = kv.Key;
 			List<int> adjFaces = kv.Value;
-
 			Vector3 vPos = verts[vIndex].Normalized();
-			
-			// --- Tangent Plane Basis Calculation ---
-			// Calculate two perpendicular vectors (u and w) on the plane tangent to the sphere at vPos.
-			// This is used to order the face centers correctly around the vertex.
+
+			// Tangent plane basis for vertex sorting
 			Vector3 u = vPos.Cross(new Vector3(0.41f, 1f, 0.73f));
-			if (u.LengthSquared() < 1e-6f) u = vPos.Cross(new Vector3(1, 0, 0));
+			if (u.LengthSquared() < 1e-6f) u = vPos.Cross(Vector3.Right);
 			u = u.Normalized();
 			Vector3 w = vPos.Cross(u).Normalized();
-			// ----------------------------------------
 
 			var polyVerts = new List<Vector3>();
 			var angles = new List<float>();
@@ -140,6 +144,7 @@ public partial class Planet : Node3D // <-- Class name now correctly matches the
 				angles.Add(angle);
 			}
 
+			// Sort vertices counterclockwise
 			var idxs = new List<int>();
 			for (int i = 0; i < angles.Count; i++) idxs.Add(i);
 			idxs.Sort((i1, i2) => angles[i1].CompareTo(angles[i2]));
@@ -147,61 +152,47 @@ public partial class Planet : Node3D // <-- Class name now correctly matches the
 			var orderedVerts = new List<Vector3>();
 			foreach (int i in idxs) orderedVerts.Add(polyVerts[i]);
 
-			// Instantiate tile (assuming HexTileScene is assigned and contains a script named HexTile)
+			// Instantiate tile
 			if (HexTileScene == null)
 			{
-				GD.PushError("HexTileScene is not assigned in the inspector! Cannot generate tiles.");
-				return; 
+				GD.PushError("HexTileScene is not assigned!");
+				return;
 			}
 			var tileInstance = (HexTile)HexTileScene.Instantiate();
 			hexContainer.AddChild(tileInstance);
 
-			bool isPentagon = adjFaces.Count == 5;
-			tileInstance.SetTileColor(isPentagon ? new Color(0.2f, 0.8f, 1.0f) : Colors.White);
+			// --- Seamless Surface ---
+			float tileRadius = Radius; // fixed radius, no per-tile deformation
+			tileInstance.Position = vPos * tileRadius;
 
-			Vector3 tileDir = vPos.Normalized();
-			tileInstance.Position = tileDir * Radius;
-			
-			// --- Orientation Fix (The most reliable method) ---
-			// The tile's local +Z axis should point outward along the normal (tileDir).
-			
-			Vector3 arbitraryUp;
-			if (Mathf.Abs(tileDir.Dot(Vector3.Up)) > 0.999f)
-			{
-				// If tileDir is nearly straight up or down, choose Vector3.Right as a safe "arbitrary" reference.
-				arbitraryUp = Vector3.Right;
-			}
-			else
-			{
-				arbitraryUp = Vector3.Up;
-			}
-			
-			// 1. Calculate the new X (right) axis: perpendicular to the normal (Z) and the arbitrary Y (Up)
-			Vector3 newX = tileDir.Cross(arbitraryUp).Normalized();
-			
-			// 2. Calculate the new Y (up) axis: perpendicular to the new X and the normal (Z)
-			Vector3 newY = newX.Cross(tileDir).Normalized();
+			// Biome coloring from noise (visual only)
+			float n = noise.GetNoise3D(vPos.X * 2f, vPos.Y * 2f, vPos.Z * 2f);
+			Color biomeColor = GetBiomeColor(n, vPos);
 
-			// 3. Set the Basis directly: Z (Forward) is the normal (tileDir)
-			tileInstance.Basis = new Basis(newX, newY, tileDir);
-			// ---------------------------------------------------
-			
-			// Get the tile's Transform (now correctly oriented)
+			// Material with standard backface culling
+			var mi = tileInstance.GetNode<MeshInstance3D>("MeshInstance3D");
+			var mat = new StandardMaterial3D();
+			mat.AlbedoColor = biomeColor;
+			mat.CullMode = BaseMaterial3D.CullModeEnum.Back;
+			mi.MaterialOverride = mat;
+
+			// Orientation
+			Vector3 arbitraryUp = Mathf.Abs(vPos.Dot(Vector3.Up)) > 0.999f ? Vector3.Right : Vector3.Up;
+			Vector3 newX = vPos.Cross(arbitraryUp).Normalized();
+			Vector3 newY = newX.Cross(vPos).Normalized();
+			tileInstance.Basis = new Basis(newX, newY, vPos);
+
 			Transform3D tileTransform = tileInstance.GlobalTransform;
 
-			// Adjust polygon slightly outward to avoid cracks (Z-fighting)
+			// Use exact radius (no offset)
 			for (int i = 0; i < orderedVerts.Count; i++)
-				orderedVerts[i] = orderedVerts[i].Normalized() * (Radius * 1.002f);
+				orderedVerts[i] = orderedVerts[i].Normalized() * tileRadius;
 
 			var localVerts = new List<Vector3>();
 			foreach (var p in orderedVerts)
-			{
-				// Correctly transform the world point into the tile's local space.
 				localVerts.Add(tileTransform.Inverse() * p);
-			}
 
-			// Build mesh
-			var mi = tileInstance.GetNode<MeshInstance3D>("MeshInstance3D");
+			// Build outward-facing polygon mesh
 			mi.Mesh = BuildPolygonMesh(localVerts);
 
 			// Collision
@@ -211,7 +202,29 @@ public partial class Planet : Node3D // <-- Class name now correctly matches the
 			cs.Shape = convex;
 		}
 
-		GD.Print($"Generated {vertexToFaces.Count} tiles at radius {Radius}");
+		GD.Print($"Generated {vertexToFaces.Count} seamless tiles at radius {Radius}");
+	}
+
+	private Color GetBiomeColor(float noiseVal, Vector3 vPos)
+	{
+		// Normalize noise to [0,1]
+		float n = (noiseVal + 1f) * 0.5f;
+
+		Color biomeColor;
+		if (n < 0.35f) biomeColor = new Color(0f, 0f, 0.5f);          // Deep ocean
+		else if (n < 0.45f) biomeColor = new Color(0.3f, 0.6f, 1f);   // Shallow ocean
+		else if (n < 0.5f) biomeColor = new Color(0.94f, 0.87f, 0.62f); // Beach
+		else if (n < 0.65f) biomeColor = new Color(0.1f, 0.8f, 0.1f);   // Grassland
+		else if (n < 0.8f) biomeColor = new Color(0f, 0.5f, 0f);        // Forest
+		else if (n < 0.9f) biomeColor = new Color(0.5f, 0.5f, 0.5f);    // Mountain
+		else biomeColor = new Color(1f, 1f, 1f);                        // Snow cap
+
+		// Polar blending
+		float latitude = Mathf.Acos(vPos.Y);
+		if (latitude < 0.2f || latitude > Mathf.Pi - 0.2f)
+			biomeColor = biomeColor.Lerp(Colors.White, 0.7f);
+
+		return biomeColor;
 	}
 
 	private ArrayMesh BuildPolygonMesh(List<Vector3> polygonVerts)
@@ -226,25 +239,16 @@ public partial class Planet : Node3D // <-- Class name now correctly matches the
 		for (int i = 0; i < polygonVerts.Count; i++)
 		{
 			Vector3 vA = centroid;
-			Vector3 vB = polygonVerts[i];
+			Vector3 vB = polygonVerts[i]; // flipped winding order
 			Vector3 vC = polygonVerts[(i + 1) % polygonVerts.Count];
-			
-			// --- FIX: Render Both Sides (Double-sided Mesh) ---
 
-			// 1. Forward-facing triangle (vA, vC, vB) - outward
+			// Outward-facing (counter-clockwise relative to planet)
 			st.AddVertex(vA);
-			st.AddVertex(vC); 
-			st.AddVertex(vB); 
-			
-			// 2. Backward-facing triangle (vA, vB, vC) - inward (flip winding order)
-			st.AddVertex(vA);
-			st.AddVertex(vB); // Flipped
-			st.AddVertex(vC); // Flipped
+			st.AddVertex(vB);
+			st.AddVertex(vC);
 		}
-		
-		// Calculate the normals based on the new winding order.
-		st.GenerateNormals(); 
-		
+
+		st.GenerateNormals();
 		return (ArrayMesh)st.Commit();
 	}
 }
