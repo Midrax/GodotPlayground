@@ -7,6 +7,7 @@ public partial class HexTile : Node3D
 	private CollisionShape3D collision;
 	private bool isSelected = false;
 	private StandardMaterial3D material;
+	public float NoiseData { get; set; }
 
 	public override void _Ready()
 	{

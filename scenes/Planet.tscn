@@ -5,9 +5,15 @@
 
 [node name="Planet" type="Node3D" node_paths=PackedStringArray("PlanetCamera")]
 script = ExtResource("1_xv80x")
-Subdivisions = 6
 HexTileScene = ExtResource("2_wsaxd")
 PlanetCamera = NodePath("Camera3D")
+Frequency = 0.5
+FractalOctaves = 10
+FractalLacunarity = 2.0
+FractalGain = 0.6
+FractalType = 2
+Seed = "Test"
+DomainWarpFractalType = 1
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 
