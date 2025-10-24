@@ -13,7 +13,8 @@ FractalLacunarity = 2.0
 FractalGain = 0.6
 FractalType = 2
 Seed = "Test"
-DomainWarpFractalType = 1
+DomainWarpFractalOctaves = 7
+DomainWarpFractalGain = 0.75
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 

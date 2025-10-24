@@ -27,7 +27,7 @@ public partial class Planet : Node3D
     [Export] public FastNoiseLite.FractalTypeEnum FractalType { get; set; } = FastNoiseLite.FractalTypeEnum.Fbm;
     [Export] public Vector3 Offset { get; set; } = Vector3.Zero;
     [Export] public string Seed { get; set; } = "Earth42";
-
+ 
     // --- Domain Warp ---
     [ExportGroup("Domain Warp")]
     [Export] public bool DomainWarpEnabled { get; set; } = false;
@@ -45,7 +45,6 @@ public partial class Planet : Node3D
     [Export] public FastNoiseLite.CellularReturnTypeEnum CellularReturnType { get; set; } = FastNoiseLite.CellularReturnTypeEnum.CellValue;
     [Export(PropertyHint.Range, "0.0,1.0,0.01")] public float CellularJitter { get; set; } = 1.0f;
     [Export(PropertyHint.Range, "0.001,1.0,0.001")] public float CellularFrequency { get; set; } = 0.05f;
-
 
     private Node3D hexContainer;
     private FastNoiseLite noise;
@@ -70,7 +69,22 @@ public partial class Planet : Node3D
         SetupNoise();
         GenerateHexSphere();
         AssignBiomes();
+
+        // --- CAMERA AUTO-POSITIONING ---
+        if (PlanetCamera != null)
+        {
+            // Place camera at 3 × radius so the entire planet fits in view
+            float distance = Radius * 3.0f;
+            PlanetCamera.Position = new Vector3(0, 0, distance);
+
+            // Aim the camera toward the planet’s center
+            PlanetCamera.LookAt(GlobalPosition, Vector3.Up);
+
+            // Optionally adjust FOV to be a bit wider for larger planets
+            PlanetCamera.Fov = Mathf.Clamp(30f + (Radius * 0.2f), 40f, 75f);
+        }
     }
+
     
     private int StringToDeterministicSeed(string s)
     {
@@ -252,11 +266,7 @@ public partial class Planet : Node3D
             else biomeColor = snow;
 
             // Apply to mesh
-            var mi = tile.GetNode<MeshInstance3D>("MeshInstance3D");
-            var mat = new StandardMaterial3D();
-            mat.AlbedoColor = biomeColor;
-            mat.CullMode = BaseMaterial3D.CullModeEnum.Back;
-            mi.MaterialOverride = mat;
+            tile.SetTileColor(biomeColor); // Call the new method on the HexTile instance
         }
     }
 
