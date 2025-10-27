@@ -4,8 +4,7 @@
 
 [resource]
 script = ExtResource("1_md63v")
-Name = "Hillside"
-MinThreshold = 0.65
-MaxThreshold = 0.75
-Color = Color(0.3629333, 0.31941, 0.24730605, 1)
+MinThreshold = 0.55
+MaxThreshold = 0.65
+Color = Color(0.29468182, 0.22260964, 0.03884089, 1)
 metadata/_custom_type_script = "uid://c7on0ntqfxa0n"

@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1_gvm4k")
 Name = "Forest"
-MinThreshold = 0.55
-MaxThreshold = 0.65
+MinThreshold = 0.45
+MaxThreshold = 0.55
 Color = Color(0.078431375, 0.32156864, 0.078431375, 1)
 metadata/_custom_type_script = "uid://c7on0ntqfxa0n"

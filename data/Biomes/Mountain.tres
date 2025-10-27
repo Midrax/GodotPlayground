@@ -4,8 +4,7 @@
 
 [resource]
 script = ExtResource("1_o64u5")
-Name = "Mountain"
-MinThreshold = 0.75
-MaxThreshold = 0.9
-Color = Color(0.5019608, 0.5019608, 0.5019608, 1)
+MinThreshold = 0.65
+MaxThreshold = 0.95
+Color = Color(0.36282945, 0.36282945, 0.36282945, 1)
 metadata/_custom_type_script = "uid://c7on0ntqfxa0n"

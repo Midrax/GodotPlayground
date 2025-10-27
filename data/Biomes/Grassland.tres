@@ -6,6 +6,6 @@
 script = ExtResource("1_gnrwk")
 Name = "Grassland"
 MinThreshold = 0.35
-MaxThreshold = 0.55
-Color = Color(0.23529412, 0.6392157, 0.19607843, 1)
+MaxThreshold = 0.45
+Color = Color(0.26508287, 0.513488, 0.18612477, 1)
 metadata/_custom_type_script = "uid://c7on0ntqfxa0n"

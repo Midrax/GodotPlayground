@@ -4,6 +4,5 @@
 
 [resource]
 script = ExtResource("1_etj2p")
-Name = "Snow"
-MinThreshold = 0.9
+MinThreshold = 0.95
 metadata/_custom_type_script = "uid://c7on0ntqfxa0n"

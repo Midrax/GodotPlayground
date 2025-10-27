@@ -1,14 +1,28 @@
-[gd_scene load_steps=4 format=3 uid="uid://cmhj00lq2rvbh"]
+[gd_scene load_steps=14 format=3 uid="uid://cmhj00lq2rvbh"]
 
 [ext_resource type="Script" uid="uid://b8mii35ko6paj" path="res://scripts/planet/Planet.cs" id="1_xv80x"]
 [ext_resource type="PackedScene" uid="uid://k22rf5rg513l" path="res://scenes/HexTile.tscn" id="2_wsaxd"]
-[ext_resource type="Resource" uid="uid://bj5h725emq6sx" path="res://data/BiomeSets/EarthBiomes.tres" id="3_744xv"]
+[ext_resource type="Script" uid="uid://c7on0ntqfxa0n" path="res://scripts/planet/Biome.cs" id="3_744xv"]
+[ext_resource type="Script" uid="uid://d17o2ntp0h3xq" path="res://scripts/planet/BiomeSet.cs" id="4_2ucv6"]
+[ext_resource type="Resource" uid="uid://b7kh34flw35o" path="res://data/Biomes/DeepOcean.tres" id="4_vjyt0"]
+[ext_resource type="Resource" uid="uid://df2holjiofks5" path="res://data/Biomes/ShallowOcean.tres" id="5_wrfv1"]
+[ext_resource type="Resource" uid="uid://dtxtdgtthkcp7" path="res://data/Biomes/Beach.tres" id="6_p2gyi"]
+[ext_resource type="Resource" uid="uid://cr7njhv2purb7" path="res://data/Biomes/Grassland.tres" id="7_83utv"]
+[ext_resource type="Resource" uid="uid://ekydc7tf8kys" path="res://data/Biomes/Forest.tres" id="8_65kwy"]
+[ext_resource type="Resource" uid="uid://ck6ainjgiecvg" path="res://data/Biomes/Hillside.tres" id="9_pjnim"]
+[ext_resource type="Resource" uid="uid://hytmaocm2q8t" path="res://data/Biomes/Mountain.tres" id="10_ympqe"]
+[ext_resource type="Resource" uid="uid://pcp60tkkf5wu" path="res://data/Biomes/Snow.tres" id="11_jghbx"]
+
+[sub_resource type="Resource" id="Resource_sskfm"]
+script = ExtResource("4_2ucv6")
+Biomes = Array[ExtResource("3_744xv")]([ExtResource("4_vjyt0"), ExtResource("5_wrfv1"), ExtResource("6_p2gyi"), ExtResource("7_83utv"), ExtResource("8_65kwy"), ExtResource("9_pjnim"), ExtResource("10_ympqe"), ExtResource("11_jghbx")])
+metadata/_custom_type_script = "uid://d17o2ntp0h3xq"
 
 [node name="Planet" type="Node3D" node_paths=PackedStringArray("PlanetCamera")]
 script = ExtResource("1_xv80x")
 HexTileScene = ExtResource("2_wsaxd")
 PlanetCamera = NodePath("Camera3D")
-BiomeSet = ExtResource("3_744xv")
+BiomeSet = SubResource("Resource_sskfm")
 Frequency = 0.5
 FractalOctaves = 10
 FractalLacunarity = 2.0
