@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="Biome" load_steps=2 format=3 uid="uid://pcp60tkkf5wu"]
+
+[ext_resource type="Script" uid="uid://c7on0ntqfxa0n" path="res://scripts/planet/Biome.cs" id="1_etj2p"]
+
+[resource]
+script = ExtResource("1_etj2p")
+Name = "Snow"
+MinThreshold = 0.9
+metadata/_custom_type_script = "uid://c7on0ntqfxa0n"

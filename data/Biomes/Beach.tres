@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="Biome" load_steps=2 format=3 uid="uid://dtxtdgtthkcp7"]
+
+[ext_resource type="Script" uid="uid://c7on0ntqfxa0n" path="res://scripts/planet/Biome.cs" id="1_6vqvo"]
+
+[resource]
+script = ExtResource("1_6vqvo")
+Name = "Beach"
+MinThreshold = 0.3
+MaxThreshold = 0.35
+Color = Color(0.9411765, 0.8980392, 0.6313726, 1)
+metadata/_custom_type_script = "uid://c7on0ntqfxa0n"

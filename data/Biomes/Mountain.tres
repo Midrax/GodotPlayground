@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="Biome" load_steps=2 format=3 uid="uid://hytmaocm2q8t"]
+
+[ext_resource type="Script" uid="uid://c7on0ntqfxa0n" path="res://scripts/planet/Biome.cs" id="1_o64u5"]
+
+[resource]
+script = ExtResource("1_o64u5")
+Name = "Mountain"
+MinThreshold = 0.75
+MaxThreshold = 0.9
+Color = Color(0.5019608, 0.5019608, 0.5019608, 1)
+metadata/_custom_type_script = "uid://c7on0ntqfxa0n"

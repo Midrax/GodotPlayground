@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" uid="uid://b1h1plhaoif5o" path="res://scripts/splitscreen/SplitScreen.cs" id="1_0t4f2"]
 [ext_resource type="Script" uid="uid://3exjlo3djnvf" path="res://scripts/splitscreen/CameraController.cs" id="1_6yklf"]
-[ext_resource type="Shader" uid="uid://bri7jlk5stu1f" path="res://split_screen.gdshader" id="2_0t4f2"]
-[ext_resource type="Texture2D" uid="uid://dddvder20syq" path="res://icon.svg" id="3_co13r"]
+[ext_resource type="Shader" uid="uid://bri7jlk5stu1f" path="res://shaders/split_screen.gdshader" id="2_0t4f2"]
+[ext_resource type="Texture2D" uid="uid://dddvder20syq" path="res://images/icon.svg" id="3_co13r"]
 [ext_resource type="Script" uid="uid://vskvq3j0g4nk" path="res://scripts/splitscreen/PlayerController.cs" id="4_l6p7v"]
 
 [sub_resource type="Environment" id="Environment_e228u"]

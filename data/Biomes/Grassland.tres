@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="Biome" load_steps=2 format=3 uid="uid://cr7njhv2purb7"]
+
+[ext_resource type="Script" uid="uid://c7on0ntqfxa0n" path="res://scripts/planet/Biome.cs" id="1_gnrwk"]
+
+[resource]
+script = ExtResource("1_gnrwk")
+Name = "Grassland"
+MinThreshold = 0.35
+MaxThreshold = 0.55
+Color = Color(0.23529412, 0.6392157, 0.19607843, 1)
+metadata/_custom_type_script = "uid://c7on0ntqfxa0n"

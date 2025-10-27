@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="Biome" load_steps=2 format=3 uid="uid://ekydc7tf8kys"]
+
+[ext_resource type="Script" uid="uid://c7on0ntqfxa0n" path="res://scripts/planet/Biome.cs" id="1_gvm4k"]
+
+[resource]
+script = ExtResource("1_gvm4k")
+Name = "Forest"
+MinThreshold = 0.55
+MaxThreshold = 0.65
+Color = Color(0.078431375, 0.32156864, 0.078431375, 1)
+metadata/_custom_type_script = "uid://c7on0ntqfxa0n"

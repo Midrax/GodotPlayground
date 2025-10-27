@@ -14,6 +14,9 @@ public partial class Planet : Node3D
     [Export] public float Radius = 18f;
     [Export] public PackedScene HexTileScene;
     [Export] public Camera3D PlanetCamera;
+    
+    [ExportGroup("Biome Settings")]
+    [Export] public BiomeSet BiomeSet { get; set; }
 
    // --- Noise Settings ---
     [ExportGroup("Base Noise")]
@@ -230,10 +233,13 @@ public partial class Planet : Node3D
             cs.Shape = convex;
         }
     }
-
     private void AssignBiomes()
     {
-        if (allTiles.Count == 0) return;
+        if (allTiles.Count == 0 || BiomeSet == null || BiomeSet.Biomes.Count == 0)
+            return;
+
+        // Sort biomes by threshold for consistency
+        var biomes = BiomeSet.Biomes.OrderBy(b => b.MinThreshold).ToList();
 
         // First, find min/max noise across all tiles
         float minNoise = allTiles.Min(t => (float)t.NoiseData);
@@ -243,33 +249,17 @@ public partial class Planet : Node3D
         foreach (var tile in allTiles)
         {
             float n = (float)tile.NoiseData;
-            // Normalize to [0,1] using actual min/max
-            n = (n - minNoise) / range;
+            n = (n - minNoise) / range; // Normalize [0–1]
 
-            Color deepOcean = new Color(0f, 0f, 0.5f);
-            Color shallowOcean = new Color(0.1f, 0.4f, 0.7f);
-            Color beach = new Color(0.94f, 0.87f, 0.62f);
-            Color grass = new Color(0.2f, 0.8f, 0.2f);
-            Color forest = new Color(0f, 0.5f, 0f);
-            Color mountain = new Color(0.5f, 0.5f, 0.5f);
-            Color snow = new Color(0.9f, 0.9f, 0.9f);
+            // Find the biome this noise value belongs to
+            Biome biome = biomes.FirstOrDefault(b => n >= b.MinThreshold && n <= b.MaxThreshold);
 
-            Color biomeColor;
+            if (biome == null)
+                biome = biomes.Last(); // fallback if none match
 
-            // Blend adjacent biomes smoothly
-            if (n < 0.2f) biomeColor = deepOcean.Lerp(shallowOcean, n / 0.2f);
-            else if (n < 0.3f) biomeColor = shallowOcean;
-            else if (n < 0.35f) biomeColor = beach;
-            else if (n < 0.55f) biomeColor = grass.Lerp(forest, (n - 0.35f) / 0.2f);
-            else if (n < 0.7f) biomeColor = forest.Lerp(mountain, (n - 0.55f) / 0.15f);
-            else if (n < 0.99f) biomeColor = mountain.Lerp(snow, (n - 0.7f) / 0.29f);
-            else biomeColor = snow;
-
-            // Apply to mesh
-            tile.SetTileColor(biomeColor); // Call the new method on the HexTile instance
+            tile.SetTileColor(biome.Color);
         }
     }
-
 
     private ArrayMesh BuildPolygonMesh(List<Vector3> polygonVerts)
     {

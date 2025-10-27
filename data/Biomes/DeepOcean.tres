@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="Biome" load_steps=2 format=3 uid="uid://b7kh34flw35o"]
+
+[ext_resource type="Script" uid="uid://c7on0ntqfxa0n" path="res://scripts/planet/Biome.cs" id="1_fweh4"]
+
+[resource]
+script = ExtResource("1_fweh4")
+Name = "Deep Ocean"
+MaxThreshold = 0.2
+Color = Color(0, 0, 0.5019608, 1)
+metadata/_custom_type_script = "uid://c7on0ntqfxa0n"
