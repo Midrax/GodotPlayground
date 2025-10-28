@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="BiomeSet" load_steps=11 format=3 uid="uid://bj5h725emq6sx"]
+[gd_resource type="Resource" script_class="BiomeSet" load_steps=13 format=3 uid="uid://bj5h725emq6sx"]
 
 [ext_resource type="Script" uid="uid://c7on0ntqfxa0n" path="res://scripts/planet/Biome.cs" id="1_3wu6f"]
 [ext_resource type="Resource" uid="uid://dtxtdgtthkcp7" path="res://data/Biomes/Beach.tres" id="2_lt3g1"]
@@ -9,9 +9,11 @@
 [ext_resource type="Resource" uid="uid://hytmaocm2q8t" path="res://data/Biomes/Tundra.tres" id="7_4a62j"]
 [ext_resource type="Resource" uid="uid://df2holjiofks5" path="res://data/Biomes/ShallowOcean.tres" id="8_3gc0k"]
 [ext_resource type="Resource" uid="uid://pcp60tkkf5wu" path="res://data/Biomes/Snow.tres" id="9_1p2tt"]
+[ext_resource type="Resource" uid="uid://dkdssowrgpifb" path="res://data/Biomes/Desert.tres" id="10_lt3g1"]
 [ext_resource type="Script" uid="uid://d17o2ntp0h3xq" path="res://scripts/planet/BiomeSet.cs" id="10_o0pv0"]
+[ext_resource type="Resource" uid="uid://c75ify4jrks20" path="res://data/Biomes/Mountain.tres" id="10_vj1vu"]
 
 [resource]
 script = ExtResource("10_o0pv0")
-Biomes = Array[ExtResource("1_3wu6f")]([ExtResource("3_vj1vu"), ExtResource("8_3gc0k"), ExtResource("2_lt3g1"), ExtResource("5_eypg3"), ExtResource("4_i2lhm"), ExtResource("6_gfdtt"), ExtResource("7_4a62j"), ExtResource("9_1p2tt")])
+Biomes = Array[ExtResource("1_3wu6f")]([ExtResource("3_vj1vu"), ExtResource("8_3gc0k"), ExtResource("2_lt3g1"), ExtResource("10_lt3g1"), ExtResource("5_eypg3"), ExtResource("4_i2lhm"), ExtResource("6_gfdtt"), ExtResource("7_4a62j"), ExtResource("10_vj1vu"), ExtResource("9_1p2tt")])
 metadata/_custom_type_script = "uid://d17o2ntp0h3xq"

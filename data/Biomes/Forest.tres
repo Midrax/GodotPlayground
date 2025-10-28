@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1_gvm4k")
 Name = "Forest"
-BaseColor = Color(0.09267285, 0.3751032, 0.089879744, 1)
+BaseColor = Color(0.15020874, 0.5587513, 0.14546338, 1)
 MinMoisture = 0.8
 MaxMoisture = 1.0
 MinTemperature = 0.30000000000000004

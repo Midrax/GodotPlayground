@@ -246,7 +246,6 @@ public partial class Planet : Node3D
             // Weighted combination: 60% latitude, 30% elevation, 10% noise
             tileInstance.TemperatureData = Mathf.Clamp(latitudeTemp * 0.6f + elevationTemp * 0.3f + noiseTemp * 0.1f, 0f, 1.0f);
 
-
             // Orientation
             Vector3 arbitraryUp = Mathf.Abs(vPos.Dot(Vector3.Up)) > 0.999f ? Vector3.Right : Vector3.Up;
             Vector3 newX = vPos.Cross(arbitraryUp).Normalized();
