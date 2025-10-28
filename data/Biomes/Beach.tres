@@ -5,7 +5,9 @@
 [resource]
 script = ExtResource("1_6vqvo")
 Name = "Beach"
-MinThreshold = 0.3
-MaxThreshold = 0.35
-Color = Color(0.9411765, 0.8980392, 0.6313726, 1)
+BaseColor = Color(0.8021142, 0.668692, 0.28184766, 1)
+MaxMoisture = 1.0
+MaxTemperature = 1.0
+MinHeight = 0.35
+MaxHeight = 0.38
 metadata/_custom_type_script = "uid://c7on0ntqfxa0n"

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="Biome" load_steps=2 format=3 uid="uid://dkdssowrgpifb"]
+
+[ext_resource type="Script" uid="uid://c7on0ntqfxa0n" path="res://scripts/planet/Biome.cs" id="1_1qq0u"]
+
+[resource]
+script = ExtResource("1_1qq0u")
+Name = "Desert"
+BaseColor = Color(0.8387142, 0.7348104, 0.5684228, 1)
+MaxMoisture = 0.4
+MinTemperature = 0.7
+MaxTemperature = 1.0
+MinHeight = 0.35
+MaxHeight = 0.55
+metadata/_custom_type_script = "uid://c7on0ntqfxa0n"

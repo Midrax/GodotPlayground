@@ -17,6 +17,10 @@ public partial class Planet : Node3D
     
     [ExportGroup("Biome Settings")]
     [Export] public BiomeSet BiomeSet { get; set; }
+    
+    private FastNoiseLite heightNoise;
+    private FastNoiseLite moistureNoise;
+    private FastNoiseLite temperatureNoise;
 
    // --- Noise Settings ---
     [ExportGroup("Base Noise")]
@@ -50,7 +54,6 @@ public partial class Planet : Node3D
     [Export(PropertyHint.Range, "0.001,1.0,0.001")] public float CellularFrequency { get; set; } = 0.05f;
 
     private Node3D hexContainer;
-    private FastNoiseLite noise;
     private List<HexTile> allTiles = new List<HexTile>();
 
     public override void _Ready()
@@ -102,39 +105,47 @@ public partial class Planet : Node3D
             return hash;
         }
     }
+    
+    private FastNoiseLite CreateNoise(int seed, float frequency)
+    {
+        var n = new FastNoiseLite();
+        n.SetSeed(seed);
+        n.SetNoiseType(NoiseType);
+        n.SetFrequency(frequency);
+        n.SetFractalType(FractalType);
+        n.SetFractalOctaves(FractalOctaves);
+        n.SetFractalLacunarity(FractalLacunarity);
+        n.SetFractalGain(FractalGain);
+        return n;
+    }
 
     private void SetupNoise()
     {
-        noise = new FastNoiseLite();
-        noise.SetSeed(StringToDeterministicSeed(Seed));
-        noise.SetNoiseType(NoiseType);
-        noise.SetFrequency(Frequency);
+        int seed = StringToDeterministicSeed(Seed);
 
-        // Fractal
-        noise.SetFractalType(FractalType);
-        noise.SetFractalOctaves(FractalOctaves);
-        noise.SetFractalLacunarity(FractalLacunarity);
-        noise.SetFractalGain(FractalGain);
-        noise.SetFractalPingPongStrength(FractalPingPongStrength);
-        noise.SetFractalWeightedStrength(FractalWeightedStrength);
+        heightNoise = CreateNoise(seed, Frequency);
+        moistureNoise = CreateNoise(seed + 101, Frequency * 0.8f);
+        temperatureNoise = CreateNoise(seed + 202, Frequency * 0.6f);
+        
+        heightNoise.SetFractalPingPongStrength(FractalPingPongStrength);
+        heightNoise.SetFractalWeightedStrength(FractalWeightedStrength);
 
         // Domain warp
         if (DomainWarpEnabled)
         {
-            noise.SetDomainWarpType(DomainWarpType);
-            noise.SetDomainWarpAmplitude(DomainWarpAmplitude);
-            noise.SetDomainWarpFrequency(DomainWarpFrequency);
-            noise.SetDomainWarpFractalOctaves(DomainWarpFractalOctaves);
-            noise.SetDomainWarpFractalLacunarity(DomainWarpFractalLacunarity);
-            noise.SetDomainWarpFractalGain(DomainWarpFractalGain);
-            noise.SetDomainWarpFractalType(DomainWarpFractalType);
+            heightNoise.SetDomainWarpType(DomainWarpType);
+            heightNoise.SetDomainWarpAmplitude(DomainWarpAmplitude);
+            heightNoise.SetDomainWarpFrequency(DomainWarpFrequency);
+            heightNoise.SetDomainWarpFractalOctaves(DomainWarpFractalOctaves);
+            heightNoise.SetDomainWarpFractalLacunarity(DomainWarpFractalLacunarity);
+            heightNoise.SetDomainWarpFractalGain(DomainWarpFractalGain);
+            heightNoise.SetDomainWarpFractalType(DomainWarpFractalType);
         }
 
         // Cellular
-        noise.SetCellularDistanceFunction(CellularDistanceFunction);
-        noise.SetCellularReturnType(CellularReturnType);
-        noise.SetCellularJitter(CellularJitter);
-        noise.SetCellularJitter(CellularFrequency);
+        heightNoise.SetCellularDistanceFunction(CellularDistanceFunction);
+        heightNoise.SetCellularReturnType(CellularReturnType);
+        heightNoise.SetCellularJitter(CellularJitter);
     }
 
     private void GenerateHexSphere()
@@ -206,9 +217,35 @@ public partial class Planet : Node3D
 
             tileInstance.Position = vPos * Radius;
 
-            // Store noise value in tile for clustering
-            float noiseVal = noise.GetNoise3D(vPos.X, vPos.Y, vPos.Z);
-            tileInstance.NoiseData = noiseVal;
+            tileInstance.HeightNoiseData = heightNoise.GetNoise3D(vPos.X, vPos.Y, vPos.Z);
+            float rawMoisture = moistureNoise.GetNoise3D(vPos.X, vPos.Y, vPos.Z);
+            float heightNormalized = Mathf.Remap((float)tileInstance.HeightNoiseData, -1f, 1f, 0.0f, 1.0f);
+
+            // More moisture near sea level, less at high altitudes
+            float elevationMoisture = Mathf.Clamp(1.0f - Mathf.InverseLerp(0.4f, 0.9f, heightNormalized), 0.0f, 1.0f);
+
+            // Combine with noise (70% noise, 30% altitude bias)
+            tileInstance.MoistureData = Mathf.Clamp(rawMoisture * 0.7f + elevationMoisture * 0.3f, 0.0f, 1.0f);
+            
+            // --- LATITUDE EFFECT ---
+            // Dot product with world up gives latitude (1 at equator, 0 at poles)
+            float latitude = Mathf.Abs(vPos.Dot(Vector3.Up));
+
+            // Temperature decreases toward poles, so invert:
+            float latitudeTemp = 1.0f - latitude;
+
+            // --- ELEVATION EFFECT ---
+            // Higher terrain is colder
+            float elevationTemp = Mathf.Clamp(1.0f - Mathf.InverseLerp(0.5f, 1.0f, (float)tileInstance.HeightNoiseData), 0f, 1.0f);
+
+            // --- BASE NOISE VARIATION ---
+            // Adds local randomness and small variation to prevent symmetry
+            float noiseTemp = Mathf.Remap(temperatureNoise.GetNoise3D(vPos.X, vPos.Y, vPos.Z), -1f, 1f, 0.0f, 1.0f);
+
+            // --- COMBINE ALL FACTORS ---
+            // Weighted combination: 60% latitude, 30% elevation, 10% noise
+            tileInstance.TemperatureData = Mathf.Clamp(latitudeTemp * 0.6f + elevationTemp * 0.3f + noiseTemp * 0.1f, 0f, 1.0f);
+
 
             // Orientation
             Vector3 arbitraryUp = Mathf.Abs(vPos.Dot(Vector3.Up)) > 0.999f ? Vector3.Right : Vector3.Up;
@@ -238,28 +275,38 @@ public partial class Planet : Node3D
         if (allTiles.Count == 0 || BiomeSet == null || BiomeSet.Biomes.Count == 0)
             return;
 
-        // Sort biomes by threshold for consistency
-        var biomes = BiomeSet.Biomes.OrderBy(b => b.MinThreshold).ToList();
+        var biomes = BiomeSet.Biomes.ToList();
 
-        // First, find min/max noise across all tiles
-        float minNoise = allTiles.Min(t => (float)t.NoiseData);
-        float maxNoise = allTiles.Max(t => (float)t.NoiseData);
-        float range = maxNoise - minNoise;
+        // Find global min/max for normalization
+        float minH = (float)allTiles.Min(t => t.HeightNoiseData);
+        float maxH = (float)allTiles.Max(t => t.HeightNoiseData);
+        float minM = (float)allTiles.Min(t => t.MoistureData);
+        float maxM = (float)allTiles.Max(t => t.MoistureData);
+        float minT = (float)allTiles.Min(t => t.TemperatureData);
+        float maxT = (float)allTiles.Max(t => t.TemperatureData);
 
         foreach (var tile in allTiles)
         {
-            float n = (float)tile.NoiseData;
-            n = (n - minNoise) / range; // Normalize [0–1]
+            float h = Mathf.InverseLerp(minH, maxH, (float)tile.HeightNoiseData);
+            float m = Mathf.InverseLerp(minM, maxM, (float)tile.MoistureData);
+            float t = Mathf.InverseLerp(minT, maxT, (float)tile.TemperatureData);
 
-            // Find the biome this noise value belongs to
-            Biome biome = biomes.FirstOrDefault(b => n >= b.MinThreshold && n <= b.MaxThreshold);
+            // Find biome that matches best
+            Biome biome = biomes.FirstOrDefault(b => b.Matches(h, m, t, 0)) ?? biomes.Last();
 
-            if (biome == null)
-                biome = biomes.Last(); // fallback if none match
-
-            tile.SetTileColor(biome.Color);
+            var mesh = tile.GetNode<MeshInstance3D>("MeshInstance3D");
+            if (biome.MaterialOverride != null)
+            {
+                mesh.SetSurfaceOverrideMaterial(0, biome.MaterialOverride);
+            }
+            else
+            {
+                tile.SetTileColor(biome.BaseColor);
+            }
         }
     }
+
+
 
     private ArrayMesh BuildPolygonMesh(List<Vector3> polygonVerts)
     {

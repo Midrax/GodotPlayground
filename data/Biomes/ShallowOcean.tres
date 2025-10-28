@@ -5,7 +5,9 @@
 [resource]
 script = ExtResource("1_g8tbi")
 Name = "Shallow Ocean"
-MinThreshold = 0.2
-MaxThreshold = 0.3
-Color = Color(0.101960786, 0.4, 0.8, 1)
+BaseColor = Color(0.12781298, 0.4808516, 0.60646224, 1)
+MaxMoisture = 1.0
+MaxTemperature = 1.0
+MinHeight = 0.3
+MaxHeight = 0.35
 metadata/_custom_type_script = "uid://c7on0ntqfxa0n"

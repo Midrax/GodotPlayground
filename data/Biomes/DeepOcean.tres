@@ -5,6 +5,8 @@
 [resource]
 script = ExtResource("1_fweh4")
 Name = "Deep Ocean"
-MaxThreshold = 0.2
-Color = Color(0, 0, 0.5019608, 1)
+BaseColor = Color(3.008172e-07, 0.18044549, 0.2737784, 1)
+MaxMoisture = 1.0
+MaxTemperature = 1.0
+MaxHeight = 0.3
 metadata/_custom_type_script = "uid://c7on0ntqfxa0n"

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="Biome" load_steps=2 format=3 uid="uid://ck6ainjgiecvg"]
+
+[ext_resource type="Script" uid="uid://c7on0ntqfxa0n" path="res://scripts/planet/Biome.cs" id="1_imds5"]
+
+[resource]
+script = ExtResource("1_imds5")
+Name = "Taiga"
+BaseColor = Color(1.9853935e-07, 0.22615308, 0.10609803, 1)
+MinMoisture = 0.6
+MaxMoisture = 1.0
+MaxTemperature = 0.5
+MinHeight = 0.6
+MaxHeight = 0.8
+metadata/_custom_type_script = "uid://c7on0ntqfxa0n"

@@ -8,8 +8,10 @@ public partial class HexTile : Node3D
     private bool isSelected = false;
     private StandardMaterial3D material;
     private Area3D area;
-
-    public float NoiseData { get; set; }
+    
+    public double HeightNoiseData;  // height
+    public double MoistureData;  // new
+    public double TemperatureData; // new
 
     public override void _Ready()
     {
@@ -136,12 +138,12 @@ public partial class HexTile : Node3D
 
     public void SetTileColor(Color color)
     {
-        // Only allow external coloring if the tile is NOT selected.
-        // This ensures the selection highlight persists.
-        if (!isSelected && material != null)
+        var mesh = GetNode<MeshInstance3D>("MeshInstance3D");
+        if (mesh != null)
         {
-            // The material is assigned by the Planet script, so this is safe.
-            material.AlbedoColor = color;
+            var mat = new StandardMaterial3D();
+            mat.AlbedoColor = color;
+            mesh.SetSurfaceOverrideMaterial(0, mat);
         }
     }
 }

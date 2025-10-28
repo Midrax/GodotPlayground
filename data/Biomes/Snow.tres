@@ -4,5 +4,11 @@
 
 [resource]
 script = ExtResource("1_etj2p")
-MinThreshold = 0.95
+Name = "Snow"
+BaseColor = Color(0.7476794, 0.7621858, 0.7586221, 1)
+MaxMoisture = 1.0
+MaxTemperature = 0.30000000000000004
+MinHeight = 0.8
+MaxHeight = 1.0
+MaxPopulation = 0.3
 metadata/_custom_type_script = "uid://c7on0ntqfxa0n"

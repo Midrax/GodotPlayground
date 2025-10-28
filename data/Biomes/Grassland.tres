@@ -4,8 +4,11 @@
 
 [resource]
 script = ExtResource("1_gnrwk")
-Name = "Grassland"
-MinThreshold = 0.35
-MaxThreshold = 0.45
-Color = Color(0.26508287, 0.513488, 0.18612477, 1)
+BaseColor = Color(0.36321878, 0.61452097, 0.21226206, 1)
+MinMoisture = 0.4
+MaxMoisture = 0.8
+MinTemperature = 0.3999999999999999
+MaxTemperature = 0.8999999999999999
+MinHeight = 0.38
+MaxHeight = 0.6
 metadata/_custom_type_script = "uid://c7on0ntqfxa0n"
