@@ -1,0 +1,20 @@
+[gd_scene load_steps=5 format=3 uid="uid://vko6df4yrln"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hyluq"]
+vertex_color_use_as_albedo = true
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_hyluq"]
+
+[sub_resource type="VoxelGeneratorNoise" id="VoxelGeneratorNoise_ptbby"]
+noise = SubResource("FastNoiseLite_hyluq")
+
+[sub_resource type="VoxelMesherTransvoxel" id="VoxelMesherTransvoxel_xtdwo"]
+texturing_mode = 1
+textures_ignore_air_voxels = true
+
+[node name="Root" type="Node3D"]
+
+[node name="VoxelTerrain" type="VoxelTerrain" parent="."]
+material_override = SubResource("StandardMaterial3D_hyluq")
+generator = SubResource("VoxelGeneratorNoise_ptbby")
+mesher = SubResource("VoxelMesherTransvoxel_xtdwo")

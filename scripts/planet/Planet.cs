@@ -305,8 +305,6 @@ public partial class Planet : Node3D
         }
     }
 
-
-
     private ArrayMesh BuildPolygonMesh(List<Vector3> polygonVerts)
     {
         Vector3 centroid = Vector3.Zero;
