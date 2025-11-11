@@ -14,7 +14,7 @@ textures_ignore_air_voxels = true
 [node name="Root" type="Node3D"]
 
 [node name="VoxelTerrain" type="VoxelTerrain" parent="."]
-max_view_distance = 1024
+max_view_distance = 512
 material_override = SubResource("StandardMaterial3D_hyluq")
 generator = ExtResource("1_ptbby")
 mesher = SubResource("VoxelMesherTransvoxel_xtdwo")
@@ -24,6 +24,6 @@ mesher = SubResource("VoxelMesherTransvoxel_xtdwo")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150.93051, 150.83469, -168.36217)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -388.86273, 33.929913, 252.63531)
 mesh = SubResource("CapsuleMesh_ptbby")
 skeleton = NodePath("../VoxelTerrain")

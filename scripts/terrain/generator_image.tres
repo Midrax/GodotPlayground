@@ -1,7 +1,8 @@
 [gd_resource type="VoxelGeneratorImage" load_steps=2 format=3 uid="uid://11ev0rnmkd8p"]
 
-[ext_resource type="Image" uid="uid://bbuaxs71hhj7c" path="res://images/sample_map_2048.png" id="1_1v2y6"]
+[ext_resource type="Image" uid="uid://qas38vppftbn" path="res://images/map/map_2048.png" id="1_1v2y6"]
 
 [resource]
 image = ExtResource("1_1v2y6")
+height_start = -100.0
 offset = Vector2i(1024, 1024)
