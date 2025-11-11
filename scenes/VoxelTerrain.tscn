@@ -1,20 +1,29 @@
 [gd_scene load_steps=5 format=3 uid="uid://vko6df4yrln"]
 
+[ext_resource type="VoxelGeneratorImage" uid="uid://11ev0rnmkd8p" path="res://scripts/terrain/generator_image.tres" id="1_ptbby"]
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hyluq"]
 vertex_color_use_as_albedo = true
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_hyluq"]
-
-[sub_resource type="VoxelGeneratorNoise" id="VoxelGeneratorNoise_ptbby"]
-noise = SubResource("FastNoiseLite_hyluq")
 
 [sub_resource type="VoxelMesherTransvoxel" id="VoxelMesherTransvoxel_xtdwo"]
 texturing_mode = 1
 textures_ignore_air_voxels = true
 
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_ptbby"]
+
 [node name="Root" type="Node3D"]
 
 [node name="VoxelTerrain" type="VoxelTerrain" parent="."]
+max_view_distance = 1024
 material_override = SubResource("StandardMaterial3D_hyluq")
-generator = SubResource("VoxelGeneratorNoise_ptbby")
+generator = ExtResource("1_ptbby")
 mesher = SubResource("VoxelMesherTransvoxel_xtdwo")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150.93051, 150.83469, -168.36217)
+mesh = SubResource("CapsuleMesh_ptbby")
+skeleton = NodePath("../VoxelTerrain")
